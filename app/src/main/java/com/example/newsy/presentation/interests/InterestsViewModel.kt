@@ -1,23 +1,32 @@
 package com.example.newsy.presentation.interests
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.newsy.data.local.UserPreferencesRepository
 import com.example.newsy.domain.model.Interest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 data class InterestsUiState(
     val interests: List<Interest> = emptyList()
 )
 
-class InterestsViewModel : ViewModel() {
+class InterestsViewModel(
+    private val userPreferencesRepository: UserPreferencesRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(InterestsUiState())
     val uiState: StateFlow<InterestsUiState> = _uiState.asStateFlow()
 
     init {
         loadInterests()
+    }
+
+    suspend fun completeOnboarding() {
+        userPreferencesRepository.setInterestsSelected(true)
     }
 
     private fun loadInterests() {

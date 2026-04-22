@@ -1,38 +1,60 @@
 package com.example.newsy.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import org.koin.androidx.compose.koinViewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.example.newsy.presentation.home.HomeScreen
+import com.example.newsy.presentation.detail.DetailScreen
 import com.example.newsy.presentation.interests.InterestsScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface Route {
     @Serializable
+    data object Loading : Route
+    @Serializable
     data object Interests : Route
     @Serializable
     data object Home : Route
+    @Serializable
+    data class Detail(val articleId: String) : Route
 }
 
 @Composable
-fun NewsyNavGraph() {
-    val backStack = remember { mutableStateListOf<Any>(Route.Interests) }
-
+fun NewsyNavGraph(
+    viewModel: NavigationViewModel = koinViewModel()
+) {
     NavDisplay(
-        backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
+        backStack = viewModel.backStack,
+        onBack = { viewModel.pop() },
         entryProvider = { key ->
             when (key) {
+                is Route.Loading -> NavEntry(key) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
                 is Route.Interests -> NavEntry(key) {
                     InterestsScreen(onStartClick = {
-                        backStack.add(Route.Home)
+                        viewModel.navigateToHome()
                     })
                 }
                 is Route.Home -> NavEntry(key) {
-                    HomeScreen()
+                    HomeScreen(onArticleClick = { id ->
+                        viewModel.push(Route.Detail(id))
+                    })
+                }
+                is Route.Detail -> NavEntry(key) {
+                    DetailScreen(
+                        articleId = key.articleId,
+                        onBackClick = { viewModel.pop() }
+                    )
                 }
                 else -> NavEntry(Unit) { 
                     // Handle unknown

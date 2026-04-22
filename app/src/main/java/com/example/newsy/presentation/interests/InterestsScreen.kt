@@ -37,7 +37,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import com.example.newsy.domain.model.Interest
 import com.example.newsy.ui.theme.Black
 import com.example.newsy.ui.theme.Blue
@@ -48,16 +50,22 @@ import com.example.newsy.ui.theme.White
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun InterestsScreen(
-    viewModel: InterestsViewModel = viewModel(),
+    viewModel: InterestsViewModel = koinViewModel(),
     onStartClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         containerColor = Black,
         bottomBar = {
             Button(
-                onClick = onStartClick,
+                onClick = {
+                    scope.launch {
+                        viewModel.completeOnboarding()
+                        onStartClick()
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
