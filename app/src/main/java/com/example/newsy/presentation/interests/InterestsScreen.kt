@@ -48,7 +48,8 @@ import com.example.newsy.ui.theme.White
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun InterestsScreen(
-    viewModel: InterestsViewModel = viewModel()
+    viewModel: InterestsViewModel = viewModel(),
+    onStartClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -56,7 +57,7 @@ fun InterestsScreen(
         containerColor = Black,
         bottomBar = {
             Button(
-                onClick = { /* Start clicked */ },
+                onClick = onStartClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
@@ -169,6 +170,6 @@ fun InterestTag(
 @Composable
 fun InterestsScreenPreview() {
     NewsyTheme {
-        InterestsScreen()
+        InterestsScreen(onStartClick = {})
     }
 }

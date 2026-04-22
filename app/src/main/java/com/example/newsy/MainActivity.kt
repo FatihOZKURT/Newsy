@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.newsy.presentation.interests.InterestsScreen
+import com.example.newsy.navigation.NewsyNavGraph
 import com.example.newsy.ui.theme.NewsyTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NewsyTheme {
-                InterestsScreen()
+                NewsyNavGraph()
             }
         }
     }
