@@ -224,10 +224,10 @@ fun NewsGridItem(
             ) {
                 Column {
                     Text(
-                        text = "THE GUARDIAN",
+                        text = article.category.uppercase(),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.primary
                     )
                     
                     Spacer(modifier = Modifier.height(8.dp))
@@ -244,7 +244,7 @@ fun NewsGridItem(
                 }
                 
                 Text(
-                    text = article.time.split("T").firstOrNull() ?: "",
+                    text = article.time.substringBefore("T"),
                     fontSize = 10.sp,
                     color = Color.LightGray
                 )
