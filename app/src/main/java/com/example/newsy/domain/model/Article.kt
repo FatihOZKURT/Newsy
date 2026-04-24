@@ -6,10 +6,8 @@ import kotlinx.serialization.Serializable
 data class Article(
     val id: String,
     val title: String,
-    val sourceName: String,
-    val sourceIconUrl: String? = null,
-    val imageUrl: String,
+    val imageUrl: String?,
     val category: String,
     val time: String,
-    val isFeatured: Boolean = false
+    val webUrl: String
 )
