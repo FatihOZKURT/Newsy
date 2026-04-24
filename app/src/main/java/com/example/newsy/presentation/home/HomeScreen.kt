@@ -1,10 +1,7 @@
 package com.example.newsy.presentation.home
 
 import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import androidx.activity.compose.BackHandler
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,21 +17,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.koin.androidx.compose.koinViewModel
+import coil3.compose.AsyncImage
 import com.example.newsy.domain.model.Article
 import com.example.newsy.presentation.explore.ExploreScreen
 import com.example.newsy.presentation.settings.SettingsScreen
 import kotlinx.coroutines.launch
-
-fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
@@ -44,7 +38,12 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
+    // Fiziksel geri tuşunu yakala ve ana sayfadayken Interest ekranına dönüşü engelle
+    BackHandler(enabled = uiState.selectedTab == 0) {
+        (context as? Activity)?.finish()
+    }
 
     val navItems = listOf(
         "Home" to Icons.Default.Home,
@@ -168,17 +167,23 @@ fun NewsFeedContent(
             }
         }
 
-        // News Grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(uiState.articles) { article ->
-                NewsGridItem(article = article) {
-                    onArticleClick(article.id)
+        if (uiState.isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = Color.Black)
+            }
+        } else {
+            // News Grid
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(uiState.articles) { article ->
+                    NewsGridItem(article = article) {
+                        onArticleClick(article.id)
+                    }
                 }
             }
         }
@@ -200,12 +205,15 @@ fun NewsGridItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            Box(
+            AsyncImage(
+                model = article.imageUrl,
+                contentDescription = article.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)
                     .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-                    .background(Color.LightGray)
+                    .background(Color.LightGray),
+                contentScale = ContentScale.Crop
             )
             
             Column(
@@ -216,7 +224,7 @@ fun NewsGridItem(
             ) {
                 Column {
                     Text(
-                        text = article.sourceName,
+                        text = "THE GUARDIAN",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Gray
@@ -236,7 +244,7 @@ fun NewsGridItem(
                 }
                 
                 Text(
-                    text = article.time,
+                    text = article.time.split("T").firstOrNull() ?: "",
                     fontSize = 10.sp,
                     color = Color.LightGray
                 )
