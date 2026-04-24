@@ -7,6 +7,8 @@ import com.example.newsy.navigation.NavigationViewModel
 import com.example.newsy.presentation.home.HomeViewModel
 import com.example.newsy.presentation.interests.InterestsViewModel
 import com.example.newsy.presentation.detail.DetailViewModel
+import com.example.newsy.data.repository.NewsRepositoryImpl
+import com.example.newsy.domain.repository.NewsRepository
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
@@ -40,6 +42,7 @@ val appModule = module {
         }
     }
     singleOf(::GuardianApiService)
+    single<NewsRepository> { NewsRepositoryImpl(get()) }
 
     // Local
     singleOf(::UserPreferencesRepository)
