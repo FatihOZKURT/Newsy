@@ -9,7 +9,9 @@ fun ArticleDTO.toDomain(): Article {
         title = webTitle,
         imageUrl = fields?.thumbnail,
         category = sectionName,
-        time = webPublicationDate, // İleride bir helper ile formatlanabilir
-        webUrl = webUrl
+        time = webPublicationDate,
+        webUrl = webUrl,
+        description = fields?.trailText,
+        body = fields?.body
     )
 }

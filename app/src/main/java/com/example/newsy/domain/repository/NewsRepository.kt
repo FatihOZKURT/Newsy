@@ -4,4 +4,5 @@ import com.example.newsy.domain.model.Article
 
 interface NewsRepository {
     suspend fun getNews(category: String, page: Int): List<Article>
+    suspend fun getArticleDetail(articleId: String): Article?
 }

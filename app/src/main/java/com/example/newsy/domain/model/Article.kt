@@ -9,5 +9,7 @@ data class Article(
     val imageUrl: String?,
     val category: String,
     val time: String,
-    val webUrl: String
+    val webUrl: String,
+    val description: String? = null,
+    val body: String? = null
 )

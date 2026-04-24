@@ -50,6 +50,6 @@ val appModule = module {
     // ViewModels
     viewModel { InterestsViewModel(get()) }
     viewModel { HomeViewModel(get()) }
-    viewModel { DetailViewModel() }
+    viewModel { DetailViewModel(get()) }
     viewModel { NavigationViewModel(get()) }
 }

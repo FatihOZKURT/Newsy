@@ -20,4 +20,11 @@ class GuardianApiService(private val client: HttpClient) {
             parameter("api-key", API_KEY)
         }.body()
     }
+
+    suspend fun getArticleDetail(articleId: String): GuardianResponseDTO {
+        return client.get("$BASE_URL/$articleId") {
+            parameter("show-fields", "thumbnail,trailText,body")
+            parameter("api-key", API_KEY)
+        }.body()
+    }
 }

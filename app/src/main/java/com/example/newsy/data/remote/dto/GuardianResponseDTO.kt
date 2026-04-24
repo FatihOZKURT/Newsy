@@ -10,13 +10,14 @@ data class GuardianResponseDTO(
 @Serializable
 data class GuardianDataDTO(
     val status: String,
-    val total: Int,
-    val startIndex: Int,
-    val pageSize: Int,
-    val currentPage: Int,
-    val pages: Int,
-    val orderBy: String,
-    val results: List<ArticleDTO>
+    val total: Int? = null,
+    val startIndex: Int? = null,
+    val pageSize: Int? = null,
+    val currentPage: Int? = null,
+    val pages: Int? = null,
+    val orderBy: String? = null,
+    val results: List<ArticleDTO>? = null,
+    val content: ArticleDTO? = null
 )
 
 @Serializable
@@ -34,5 +35,7 @@ data class ArticleDTO(
 
 @Serializable
 data class FieldsDTO(
-    val thumbnail: String? = null
+    val thumbnail: String? = null,
+    val trailText: String? = null,
+    val body: String? = null
 )
