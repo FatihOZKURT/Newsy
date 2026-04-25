@@ -77,7 +77,7 @@ fun HomeFeedContent(
                         Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.Black)
                     }
 
-                    ScrollableTabRow(
+                    SecondaryScrollableTabRow(
                         selectedTabIndex = uiState.categories.indexOf(uiState.selectedCategory),
                         edgePadding = 8.dp,
                         containerColor = Color.Transparent,
