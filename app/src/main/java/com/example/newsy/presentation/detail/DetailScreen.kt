@@ -86,7 +86,7 @@ fun DetailScreen(
                         .background(Color.LightGray),
                     contentScale = ContentScale.Crop
                 )
-                
+
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = article.category.uppercase(),
@@ -94,21 +94,21 @@ fun DetailScreen(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    
+
                     Text(
                         text = article.title,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         lineHeight = 28.sp
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     // HTML içeriği temizleyip göstermek için basit bir yöntem
-                    val bodyText = article.body?.let { 
-                        Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT).toString() 
+                    val bodyText = article.body?.let {
+                        Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT).toString()
                     } ?: article.description ?: ""
 
                     Text(

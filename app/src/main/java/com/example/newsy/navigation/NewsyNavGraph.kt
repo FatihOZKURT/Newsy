@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import org.koin.androidx.compose.koinViewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
-import com.example.newsy.presentation.home.HomeScreen
 import com.example.newsy.presentation.detail.DetailScreen
 import com.example.newsy.presentation.interests.InterestsScreen
+import com.example.newsy.presentation.main.MainScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -21,7 +21,7 @@ sealed interface Route {
     @Serializable
     data object Interests : Route
     @Serializable
-    data object Home : Route
+    data object Main : Route
     @Serializable
     data class Detail(val articleId: String) : Route
 }
@@ -45,8 +45,8 @@ fun NewsyNavGraph(
                         viewModel.navigateToHome()
                     })
                 }
-                is Route.Home -> NavEntry(key) {
-                    HomeScreen(onArticleClick = { id ->
+                is Route.Main -> NavEntry(key) {
+                    MainScreen(onArticleClick = { id ->
                         viewModel.push(Route.Detail(id))
                     })
                 }

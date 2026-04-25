@@ -19,7 +19,7 @@ class NavigationViewModel(
         viewModelScope.launch {
             val isSelected = userPreferencesRepository.isInterestsSelected.first()
             if (isSelected) {
-                backStack = listOf(Route.Home)
+                backStack = listOf(Route.Main)
             } else {
                 backStack = listOf(Route.Interests)
             }
@@ -37,7 +37,7 @@ class NavigationViewModel(
     }
 
     fun navigateToHome() {
-        if (backStack.size == 1 && backStack.first() == Route.Home) return
-        backStack = listOf(Route.Home)
+        if (backStack.size == 1 && backStack.first() == Route.Main) return
+        backStack = listOf(Route.Main)
     }
 }
