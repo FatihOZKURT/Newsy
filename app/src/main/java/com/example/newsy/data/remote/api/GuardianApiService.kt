@@ -17,6 +17,8 @@ class GuardianApiService(private val client: HttpClient) {
         return client.get("$BASE_URL/search") {
             parameter("section", category)
             parameter("page", page)
+            parameter("from-date", "2020-01-01")
+            parameter("order-by", "newest") // En yeni haberleri en üstte getir
             parameter("show-fields", "thumbnail")
             parameter("api-key", API_KEY)
         }.body()
