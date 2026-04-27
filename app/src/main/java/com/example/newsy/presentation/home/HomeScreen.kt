@@ -92,7 +92,7 @@ fun HomeFeedContent(
                                 onClick = { onCategorySelect(category) },
                                 text = {
                                     Text(
-                                        text = category,
+                                        text = category.uppercase(),
                                         fontSize = 14.sp,
                                         fontWeight = if (uiState.selectedCategory == category) FontWeight.Bold else FontWeight.Normal,
                                         color = if (uiState.selectedCategory == category) Color.Black else Color.Gray
@@ -184,7 +184,7 @@ fun NewsGridItem(
                 }
 
                 Text(
-                    text = article.time.substringBefore("T"),
+                    text = article.time.substringBefore("T").ifEmpty { "Today" },
                     fontSize = 10.sp,
                     color = Color.LightGray
                 )

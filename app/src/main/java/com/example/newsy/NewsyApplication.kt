@@ -48,8 +48,8 @@ val appModule = module {
     singleOf(::UserPreferencesRepository)
 
     // ViewModels
-    viewModel { InterestsViewModel(get()) }
-    viewModel { HomeViewModel(get()) }
+    viewModel { InterestsViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get()) }
     viewModel { DetailViewModel(get()) }
     viewModel { NavigationViewModel(get()) }
 }

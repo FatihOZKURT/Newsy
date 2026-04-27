@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,6 +56,7 @@ fun InterestsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
+    val isAnyInterestSelected = uiState.interests.any { it.isSelected }
 
     Scaffold(
         containerColor = Black,
@@ -66,11 +68,15 @@ fun InterestsScreen(
                         onStartClick()
                     }
                 },
+                enabled = isAnyInterestSelected,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(24.dp)
                     .height(64.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Red),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Red,
+                    disabledContainerColor = Red.copy(alpha = 0.5f)
+                ),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
@@ -115,23 +121,34 @@ fun InterestsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .verticalScroll(rememberScrollState())
             ) {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    uiState.interests.forEachIndexed { index, interest ->
-                        InterestTag(
-                            interest = interest,
-                            onClick = {
-                                viewModel.toggleInterest(index)
+                if (uiState.isLoading) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = White)
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            uiState.interests.forEachIndexed { index, interest ->
+                                InterestTag(
+                                    interest = interest,
+                                    onClick = {
+                                        viewModel.toggleInterest(index)
+                                    }
+                                )
                             }
-                        )
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

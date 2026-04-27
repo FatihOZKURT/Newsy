@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsy.data.local.UserPreferencesRepository
 import com.example.newsy.domain.model.Interest
+import com.example.newsy.domain.repository.NewsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,10 +12,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class InterestsUiState(
-    val interests: List<Interest> = emptyList()
+    val interests: List<Interest> = emptyList(),
+    val isLoading: Boolean = false
 )
 
 class InterestsViewModel(
+    private val newsRepository: NewsRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
@@ -25,52 +28,40 @@ class InterestsViewModel(
         loadInterests()
     }
 
-    suspend fun completeOnboarding() {
-        userPreferencesRepository.setInterestsSelected(true)
+    private fun loadInterests() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            try {
+                // Sadece ilk 40 kategoriyi alıyoruz
+                val sections = newsRepository.getSections().take(40).mapIndexed { index, interest ->
+                    if (index < 2) interest.copy(isSelected = true) else interest
+                }
+                if (sections.isEmpty()) {
+                    val fallback = listOf(
+                        Interest("news", "News"),
+                        Interest("technology", "Technology"),
+                        Interest("business", "Business"),
+                        Interest("science", "Science"),
+                        Interest("sport", "Sport")
+                    )
+                    _uiState.update { it.copy(interests = fallback, isLoading = false) }
+                } else {
+                    _uiState.update { it.copy(interests = sections, isLoading = false) }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
     }
 
-    private fun loadInterests() {
-        val initialInterests = listOf(
-            Interest("NEWS", true),
-            Interest("TECHNOLOGY", true),
-            Interest("BUSINESS & FINANCE"),
-            Interest("SCIENCE"),
-            Interest("HISTORY"),
-            Interest("ARTIFICIAL INTELLIGENCE"),
-            Interest("INVESTMENT"),
-            Interest("FASHION"),
-            Interest("NASA"),
-            Interest("CRYPTO CURRENCY"),
-            Interest("FOOTBALL"),
-            Interest("ENTREPRENEURSHIP"),
-            Interest("SPORTS"),
-            Interest("SUSTAINABILITY"),
-            Interest("WARS AND CONFLICTS"),
-            Interest("TENNIS"),
-            Interest("BASKETBALL"),
-            Interest("BOOKS"),
-            Interest("MOVIES"),
-            Interest("MUSIC"),
-            Interest("ART"),
-            Interest("HEALTH"),
-            Interest("TRAVEL"),
-            Interest("FOOD"),
-            Interest("GAMING"),
-            Interest("POLITICS"),
-            Interest("EDUCATION"),
-            Interest("PSYCHOLOGY"),
-            Interest("PHILOSOPHY"),
-            Interest("ENVIRONMENT"),
-            Interest("SPACE"),
-            Interest("AUTOMOTIVE"),
-            Interest("ARCHITECTURE"),
-            Interest("LIFESTYLE"),
-            Interest("FITNESS"),
-            Interest("E-SPORTS"),
-            Interest("VR/AR"),
-            Interest("ROBOTICS")
-        )
-        _uiState.update { it.copy(interests = initialInterests) }
+    suspend fun completeOnboarding() {
+        val selected = _uiState.value.interests
+            .filter { it.isSelected }
+            .map { it.id }
+            .toSet()
+        
+        userPreferencesRepository.saveSelectedCategories(selected)
+        userPreferencesRepository.setInterestsSelected(true)
     }
 
     fun toggleInterest(index: Int) {
