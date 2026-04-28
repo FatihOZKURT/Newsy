@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.newsy.presentation.explore.ExploreScreen
 import com.example.newsy.presentation.home.HomeFeedContent
 import com.example.newsy.presentation.home.HomeViewModel
@@ -26,6 +27,7 @@ fun MainScreen(
     onArticleClick: (String) -> Unit
 ) {
     val homeUiState by homeViewModel.uiState.collectAsState()
+    val articles = homeViewModel.articlesFlow.collectAsLazyPagingItems()
     val context = LocalContext.current
 
     // Fiziksel geri tuşunu yakala ve ana sayfadayken Interest ekranına dönüşü engelle
@@ -65,6 +67,7 @@ fun MainScreen(
             when (homeUiState.selectedTab) {
                 0 -> HomeFeedContent(
                     uiState = homeUiState,
+                    articles = articles,
                     onCategorySelect = homeViewModel::selectCategory,
                     onArticleClick = onArticleClick
                 )

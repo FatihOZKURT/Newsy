@@ -1,12 +1,17 @@
 package com.example.newsy.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.example.newsy.data.mapper.toDomain
 import com.example.newsy.data.remote.api.GuardianApiService
 import com.example.newsy.data.remote.dto.ArticleDTO
 import com.example.newsy.data.remote.dto.SectionDTO
+import com.example.newsy.data.remote.paging.NewsPagingSource
 import com.example.newsy.domain.model.Article
 import com.example.newsy.domain.model.Interest
 import com.example.newsy.domain.repository.NewsRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 
@@ -16,20 +21,16 @@ class NewsRepositoryImpl(
 
     private val json = Json { ignoreUnknownKeys = true }
     
-    override suspend fun getNews(category: String, page: Int): List<Article> {
-        return try {
-            val response = apiService.getNews(category, page)
-            response.response.results?.mapNotNull { element ->
-                try {
-                    val dto = json.decodeFromJsonElement<ArticleDTO>(element)
-                    dto.toDomain()
-                } catch (e: Exception) {
-                    null
-                }
-            } ?: emptyList()
-        } catch (e: Exception) {
-            emptyList()
-        }
+    override fun getNews(category: String): Flow<PagingData<Article>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 10,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                NewsPagingSource(apiService, category)
+            }
+        ).flow
     }
 
     override suspend fun getArticleDetail(articleId: String): Article? {

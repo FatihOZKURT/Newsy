@@ -12,16 +12,16 @@ import kotlinx.coroutines.launch
 class NavigationViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
-    var backStack by mutableStateOf<List<Any>>(listOf(Route.Loading))
+    var backStack by mutableStateOf<List<Any>>(emptyList())
         private set
 
     init {
         viewModelScope.launch {
             val isSelected = userPreferencesRepository.isInterestsSelected.first()
-            if (isSelected) {
-                backStack = listOf(Route.Main)
+            backStack = if (isSelected) {
+                listOf(Route.Main)
             } else {
-                backStack = listOf(Route.Interests)
+                listOf(Route.Interests)
             }
         }
     }

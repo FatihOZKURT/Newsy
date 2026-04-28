@@ -30,16 +30,13 @@ sealed interface Route {
 fun NewsyNavGraph(
     viewModel: NavigationViewModel = koinViewModel()
 ) {
+    if (viewModel.backStack.isEmpty()) return
+
     NavDisplay(
         backStack = viewModel.backStack,
         onBack = { viewModel.pop() },
         entryProvider = { key ->
             when (key) {
-                is Route.Loading -> NavEntry(key) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
                 is Route.Interests -> NavEntry(key) {
                     InterestsScreen(onStartClick = {
                         viewModel.navigateToHome()
