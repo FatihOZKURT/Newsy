@@ -11,6 +11,7 @@ composeBom = "2026.02.01"
 ktor = "3.4.2"
 kotlinxSerialization = "1.8.0"
 sqldelight = "2.3.2"
+sqldelight-paging = "2.0.2"
 koin = "4.2.1"
 navigation3 = "1.1.0"
 datastore = "1.2.1"
@@ -46,6 +47,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 
 # SQLDelight
 sqldelight-android-driver = { group = "app.cash.sqldelight", name = "android-driver", version.ref = "sqldelight" }
+sqldelight-paging = { group = "app.cash.sqldelight", name = "androidx-paging3-extensions", version.ref = "sqldelight" }
 
 # Koin
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }

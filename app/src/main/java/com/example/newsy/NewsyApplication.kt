@@ -1,6 +1,8 @@
 package com.example.newsy
 
 import android.app.Application
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import com.example.newsy.data.local.NewsyDatabase
 import com.example.newsy.data.local.UserPreferencesRepository
 import com.example.newsy.data.remote.api.GuardianApiService
 import com.example.newsy.navigation.NavigationViewModel
@@ -30,6 +32,12 @@ class NewsyApplication : Application() {
 }
 
 val appModule = module {
+    // Database
+    single {
+        val driver = AndroidSqliteDriver(NewsyDatabase.Schema, get(), "newsy.db")
+        NewsyDatabase(driver)
+    }
+
     // Network
     single {
         HttpClient {
@@ -42,7 +50,7 @@ val appModule = module {
         }
     }
     singleOf(::GuardianApiService)
-    single<NewsRepository> { NewsRepositoryImpl(get()) }
+    single<NewsRepository> { NewsRepositoryImpl(get(), get()) }
 
     // Local
     singleOf(::UserPreferencesRepository)

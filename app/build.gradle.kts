@@ -51,8 +51,8 @@ kotlin {
 
 sqldelight {
     databases {
-        create("NewsDatabase") {
-            packageName.set("com.example.newsy.db")
+        create("NewsyDatabase") {
+            packageName.set("com.example.newsy.data.local")
         }
     }
 }
@@ -79,6 +79,7 @@ dependencies {
 
     // SQLDelight
     implementation(libs.sqldelight.android.driver)
+    implementation(libs.sqldelight.paging)
 
     // Koin
     implementation(libs.koin.android)

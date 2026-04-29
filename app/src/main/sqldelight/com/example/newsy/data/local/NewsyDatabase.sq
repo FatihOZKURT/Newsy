@@ -1,0 +1,62 @@
+CREATE TABLE ArticleEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    imageUrl TEXT,
+    category TEXT NOT NULL,
+    time TEXT NOT NULL,
+    webUrl TEXT NOT NULL,
+    description TEXT,
+    body TEXT,
+    isBookmarked INTEGER DEFAULT 0,
+    fetchedAt INTEGER NOT NULL
+);
+
+CREATE TABLE RemoteKeys (
+    id TEXT NOT NULL PRIMARY KEY,
+    prevKey INTEGER,
+    nextKey INTEGER,
+    category TEXT NOT NULL
+);
+
+-- Queries for News Feed
+insertArticle:
+INSERT OR REPLACE INTO ArticleEntity(id, title, imageUrl, category, time, webUrl, description, body, fetchedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getArticlesByCategory:
+SELECT * FROM ArticleEntity
+WHERE category = :category
+ORDER BY time DESC
+LIMIT :limit OFFSET :offset;
+
+countArticlesByCategory:
+SELECT count(*) FROM ArticleEntity
+WHERE category = :category;
+
+clearArticlesByCategory:
+DELETE FROM ArticleEntity
+WHERE category = :category AND isBookmarked = 0;
+
+-- Queries for Bookmarks
+toggleBookmark:
+UPDATE ArticleEntity
+SET isBookmarked = :isBookmarked
+WHERE id = :id;
+
+getBookmarkedArticles:
+SELECT * FROM ArticleEntity
+WHERE isBookmarked = 1
+ORDER BY time DESC;
+
+-- Queries for Remote Keys
+insertKey:
+INSERT OR REPLACE INTO RemoteKeys(id, prevKey, nextKey, category)
+VALUES (?, ?, ?, ?);
+
+getRemoteKeyById:
+SELECT * FROM RemoteKeys
+WHERE id = :id;
+
+clearRemoteKeysByCategory:
+DELETE FROM RemoteKeys
+WHERE category = :category;

@@ -1,7 +1,7 @@
 package com.example.newsy.presentation.home
 
 import android.app.Activity
-import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,12 +21,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.example.newsy.R
 import com.example.newsy.domain.model.Article
 import com.example.newsy.presentation.components.NewsImage
 import kotlinx.coroutines.launch
@@ -141,6 +143,8 @@ fun HomeFeedContent(
                             modifier = Modifier.align(Alignment.Center),
                             color = Color.Black
                         )
+                    } else if (articles.itemCount == 0 && !isPagingRefreshing) {
+                        EmptyState()
                     } else {
                         // News Grid
                         LazyVerticalGrid(
@@ -159,18 +163,8 @@ fun HomeFeedContent(
                                 }
                             }
 
-                            // Sadece Hata Durumları
+                            // Alt kısımdaki hata durumları (append)
                             articles.apply {
-                                if (loadState.refresh is LoadState.Error) {
-                                    val e = loadState.refresh as LoadState.Error
-                                    item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
-                                        Text(
-                                            text = e.error.localizedMessage ?: "Error",
-                                            color = Color.Red,
-                                            modifier = Modifier.padding(16.dp)
-                                        )
-                                    }
-                                }
                                 if (loadState.append is LoadState.Error) {
                                     val e = loadState.append as LoadState.Error
                                     item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
@@ -187,6 +181,30 @@ fun HomeFeedContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun EmptyState(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.newsy_app_icon),
+            contentDescription = null,
+            modifier = Modifier
+                .size(100.dp)
+                .clip(RoundedCornerShape(20.dp))
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "This channel has no content to display",
+            fontSize = 16.sp,
+            color = Color.Gray,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
 
