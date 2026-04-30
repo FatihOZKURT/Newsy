@@ -11,6 +11,7 @@ import com.example.newsy.presentation.interests.InterestsViewModel
 import com.example.newsy.presentation.detail.DetailViewModel
 import com.example.newsy.data.repository.NewsRepositoryImpl
 import com.example.newsy.domain.repository.NewsRepository
+import com.example.newsy.util.network.NetworkMonitor
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
@@ -54,6 +55,7 @@ val appModule = module {
 
     // Local
     singleOf(::UserPreferencesRepository)
+    single { NetworkMonitor(get()) }
 
     // ViewModels
     viewModel { InterestsViewModel(get(), get()) }

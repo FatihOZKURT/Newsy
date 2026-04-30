@@ -8,18 +8,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.newsy.presentation.explore.ExploreScreen
 import com.example.newsy.presentation.home.HomeFeedContent
 import com.example.newsy.presentation.home.HomeViewModel
 import com.example.newsy.presentation.settings.SettingsScreen
+import com.example.newsy.util.network.NetworkMonitor
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun MainScreen(
@@ -29,6 +35,8 @@ fun MainScreen(
     val homeUiState by homeViewModel.uiState.collectAsState()
     val articles = homeViewModel.articlesFlow.collectAsLazyPagingItems()
     val context = LocalContext.current
+    val networkMonitor: NetworkMonitor = koinInject()
+    val isConnected by networkMonitor.isConnected.collectAsState(initial = true)
 
     // Fiziksel geri tuşunu yakala ve ana sayfadayken Interest ekranına dönüşü engelle
     BackHandler(enabled = homeUiState.selectedTab == 0) {
@@ -43,22 +51,48 @@ fun MainScreen(
 
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = Color.White,
-                tonalElevation = 8.dp
-            ) {
-                navItems.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        selected = homeUiState.selectedTab == index,
-                        onClick = { homeViewModel.selectTab(index) },
-                        icon = { Icon(item.second, contentDescription = item.first) },
-                        label = { Text(item.first) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color.Black,
-                            unselectedIconColor = Color.Gray,
-                            indicatorColor = Color.LightGray.copy(alpha = 0.3f)
+            Column {
+                if (!isConnected) {
+                    Surface(
+                        color = Color(0xFFE53935),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = "Internet connection not found",
+                                color = Color.White,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+                NavigationBar(
+                    containerColor = Color.White,
+                    tonalElevation = 8.dp
+                ) {
+                    navItems.forEachIndexed { index, item ->
+                        NavigationBarItem(
+                            selected = homeUiState.selectedTab == index,
+                            onClick = { homeViewModel.selectTab(index) },
+                            icon = { Icon(item.second, contentDescription = item.first) },
+                            label = { Text(item.first) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color.Black,
+                                unselectedIconColor = Color.Gray,
+                                indicatorColor = Color.LightGray.copy(alpha = 0.3f)
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
