@@ -31,6 +31,7 @@ import androidx.paging.compose.LazyPagingItems
 import com.example.newsy.R
 import com.example.newsy.domain.model.Article
 import com.example.newsy.presentation.components.NewsImage
+import com.example.newsy.util.Constants
 import kotlinx.coroutines.launch
 
 @Composable
@@ -114,7 +115,7 @@ fun HomeFeedContent(
                                 onClick = { onCategorySelect(category) },
                                 text = {
                                     Text(
-                                        text = category.uppercase(),
+                                        text = Constants.getCategoryDisplayName(category),
                                         fontSize = 14.sp,
                                         fontWeight = if (uiState.selectedCategory == category) FontWeight.Bold else FontWeight.Normal,
                                         color = if (uiState.selectedCategory == category) Color.Black else Color.Gray
@@ -240,7 +241,7 @@ fun NewsGridItem(
             ) {
                 Column {
                     Text(
-                        text = article.category.uppercase(),
+                        text = Constants.getCategoryDisplayName(article.category),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary

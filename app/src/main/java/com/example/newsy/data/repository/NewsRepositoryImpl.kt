@@ -10,6 +10,7 @@ import com.example.newsy.data.remote.dto.SectionDTO
 import com.example.newsy.domain.model.Article
 import com.example.newsy.domain.model.Interest
 import com.example.newsy.domain.repository.NewsRepository
+import com.example.newsy.util.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -76,20 +77,24 @@ class NewsRepositoryImpl(
     }
 
     override suspend fun getSections(): List<Interest> {
+        val allowedSections = Constants.ALLOWED_SECTIONS
+
         return try {
             val response = apiService.getSections()
             response.response.results?.mapNotNull { element ->
                 try {
                     val dto = json.decodeFromJsonElement<SectionDTO>(element)
-                    Interest(
-                        id = dto.id,
-                        name = dto.webTitle.uppercase(),
-                        isSelected = false
-                    )
+                    if (allowedSections.contains(dto.id)) {
+                        Interest(
+                            id = dto.id,
+                            name = Constants.getCategoryDisplayName(dto.id),
+                            isSelected = false
+                        )
+                    } else null
                 } catch (e: Exception) {
                     null
                 }
-            } ?: emptyList()
+            }?.sortedBy { it.name } ?: emptyList()
         } catch (e: Exception) {
             emptyList()
         }

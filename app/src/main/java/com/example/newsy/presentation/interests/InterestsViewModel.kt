@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.newsy.data.local.UserPreferencesRepository
 import com.example.newsy.domain.model.Interest
 import com.example.newsy.domain.repository.NewsRepository
+import com.example.newsy.util.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,22 +33,25 @@ class InterestsViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                // Sadece ilk 40 kategoriyi alıyoruz
-                val sections = newsRepository.getSections().take(40).mapIndexed { index, interest ->
+                var sections = newsRepository.getSections()
+                
+                if (sections.isEmpty()) {
+                    // İnternet yoksa veya hata oluştuysa Constants listesini kullan
+                    sections = Constants.ALLOWED_SECTIONS.map { id ->
+                        Interest(
+                            id = id,
+                            name = Constants.getCategoryDisplayName(id),
+                            isSelected = false
+                        )
+                    }.sortedBy { it.name }
+                }
+
+                // İlk 2 kategoriyi varsayılan olarak seçili yap
+                val finalSections = sections.mapIndexed { index, interest ->
                     if (index < 2) interest.copy(isSelected = true) else interest
                 }
-                if (sections.isEmpty()) {
-                    val fallback = listOf(
-                        Interest("news", "News"),
-                        Interest("technology", "Technology"),
-                        Interest("business", "Business"),
-                        Interest("science", "Science"),
-                        Interest("sport", "Sport")
-                    )
-                    _uiState.update { it.copy(interests = fallback, isLoading = false) }
-                } else {
-                    _uiState.update { it.copy(interests = sections, isLoading = false) }
-                }
+
+                _uiState.update { it.copy(interests = finalSections, isLoading = false) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false) }
             }
